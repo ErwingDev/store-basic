@@ -2,7 +2,7 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateCategoryDto, UpdateCategoryDto } from 'src/common/dtos/category.dto';
 import { Category } from 'src/common/entities/category.entity';
-import { CRUDMessages } from 'src/common/enums/message.enum';
+import { CRUDMessages, CustomMessages } from 'src/common/enums/message.enum';
 import { Repository } from 'typeorm';
 
 @Injectable()
@@ -45,7 +45,7 @@ export class CategoriesService {
             if(!category) {
                 return {
                     statusCode: HttpStatus.NOT_FOUND,
-                    message: CRUDMessages.GetNotfound,
+                    message: CustomMessages.RegisterNotFound(`idCategory: ${id}`),
                     data: null
                 }
             }
@@ -68,7 +68,7 @@ export class CategoriesService {
             if(!category) {
                 return {
                     statusCode: HttpStatus.NOT_FOUND,
-                    message: CRUDMessages.GetNotfound,
+                    message: CustomMessages.RegisterNotFound(`idCategory: ${id}`),
                     data: null
                 }
             }
@@ -93,7 +93,7 @@ export class CategoriesService {
             if(!category) {
                 return {
                     statusCode: HttpStatus.NOT_FOUND,
-                    message: CRUDMessages.GetNotfound,
+                    message: CustomMessages.RegisterNotFound(`idCategory: ${id}`),
                     data: null
                 }
             }

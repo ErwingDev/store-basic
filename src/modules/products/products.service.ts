@@ -2,7 +2,7 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateProductDto, UpdateProductDto, UpdateStockProductDto } from 'src/common/dtos/product.dto';
 import { Products } from 'src/common/entities/product.entity';
-import { CRUDMessages } from 'src/common/enums/message.enum';
+import { CRUDMessages, CustomMessages } from 'src/common/enums/message.enum';
 import { Repository } from 'typeorm';
 import { DateTime } from 'luxon';
 import { Category } from 'src/common/entities/category.entity';
@@ -65,7 +65,7 @@ export class ProductsService {
             if(!product) {
                 return {
                     statusCode: HttpStatus.NOT_FOUND,
-                    message: CRUDMessages.GetNotfound,
+                    message: CustomMessages.RegisterNotFound(`idProduct: ${id}`),
                     data: null
                 }
             }
@@ -88,7 +88,7 @@ export class ProductsService {
             if(!product) {
                 return {
                     statusCode: HttpStatus.NOT_FOUND,
-                    message: CRUDMessages.GetNotfound,
+                    message: CustomMessages.RegisterNotFound(`idProduct: ${id}`),
                     data: null
                 }
             }
@@ -113,7 +113,7 @@ export class ProductsService {
             if(!product) {
                 return {
                     statusCode: HttpStatus.NOT_FOUND,
-                    message: CRUDMessages.GetNotfound,
+                    message: CustomMessages.RegisterNotFound(`idProduct: ${id}`),
                     data: null
                 }
             }
@@ -138,7 +138,7 @@ export class ProductsService {
             if(!product) {
                 return {
                     statusCode: HttpStatus.NOT_FOUND,
-                    message: CRUDMessages.GetNotfound,
+                    message: CustomMessages.RegisterNotFound(`idProduct: ${id}`),
                     data: null
                 }
             }
@@ -163,7 +163,7 @@ export class ProductsService {
             if(!product) {
                 return {
                     statusCode: HttpStatus.NOT_FOUND,
-                    message: CRUDMessages.GetNotfound,
+                    message: CustomMessages.RegisterNotFound(`idProduct: ${id}`),
                     data: null
                 }
             }

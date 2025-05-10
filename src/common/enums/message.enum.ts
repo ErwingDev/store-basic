@@ -13,3 +13,7 @@ export enum CRUDMessages {
     UpdateError = 'Ocurrio un error al intentar actualizar el registro.',
     GenericException = 'Ocurrio un error.',
 }
+
+export const CustomMessages = {
+    RegisterNotFound: (field: string) => `No existe un registro relacionado con el campo ${field}`,
+};

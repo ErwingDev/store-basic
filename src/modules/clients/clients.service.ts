@@ -2,7 +2,7 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateClientDto, UpdateClientDto } from 'src/common/dtos/client.dto';
 import { Clients } from 'src/common/entities/client.entity';
-import { CRUDMessages } from 'src/common/enums/message.enum';
+import { CRUDMessages, CustomMessages } from 'src/common/enums/message.enum';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { DateTime } from 'luxon';
@@ -56,7 +56,7 @@ export class ClientsService {
             if(!client) {
                 return {
                     statusCode: HttpStatus.NOT_FOUND,
-                    message: CRUDMessages.GetNotfound,
+                    message: CustomMessages.RegisterNotFound(`idClient: ${id}`),
                     data: null
                 }
             }
@@ -79,7 +79,7 @@ export class ClientsService {
             if(!client) {
                 return {
                     statusCode: HttpStatus.NOT_FOUND,
-                    message: CRUDMessages.GetNotfound,
+                    message: CustomMessages.RegisterNotFound(`idClient: ${id}`),
                     data: null
                 }
             }
@@ -104,7 +104,7 @@ export class ClientsService {
             if(!client) {
                 return {
                     statusCode: HttpStatus.NOT_FOUND,
-                    message: CRUDMessages.GetNotfound,
+                    message: CustomMessages.RegisterNotFound(`idClient: ${id}`),
                     data: null
                 }
             }

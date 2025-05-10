@@ -1,4 +1,4 @@
-import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
 import { OrderStatus } from "../enums/order.enum";
 import { OrderItems } from "./order-items.entity";
 import { Clients } from "./client.entity";
@@ -6,8 +6,12 @@ import { Clients } from "./client.entity";
 @Entity('orders', { schema: 'public' })
 export class Order {
 
-    @PrimaryColumn({
+    /* @PrimaryColumn({
         type: 'integer',
+        name: 'idorder'
+    }) */
+    @PrimaryGeneratedColumn({
+        type: 'integer', 
         name: 'idorder'
     })
     idorder: number;

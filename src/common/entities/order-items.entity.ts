@@ -24,7 +24,7 @@ export class OrderItems {
         precision: 10, 
         scale: 2
     })
-    unitPrice: string;
+    unitPrice: number;
   
     @ManyToOne(() => Order, (order) => order.items)
     @JoinColumn({ name: 'idorder' })

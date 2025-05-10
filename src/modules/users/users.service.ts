@@ -5,7 +5,7 @@ import { Users } from 'src/common/entities/user.entity';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { DateTime } from 'luxon';
-import { CRUDMessages } from 'src/common/enums/message.enum';
+import { CRUDMessages, CustomMessages } from 'src/common/enums/message.enum';
 
 @Injectable()
 export class UsersService {
@@ -55,7 +55,7 @@ export class UsersService {
             if(!user) {
                 return {
                     statusCode: HttpStatus.NOT_FOUND,
-                    message: CRUDMessages.GetNotfound,
+                    message: CustomMessages.RegisterNotFound(`idUser: ${id}`),
                     data: null
                 }
             }
@@ -78,7 +78,7 @@ export class UsersService {
             if(!user) {
                 return {
                     statusCode: HttpStatus.NOT_FOUND,
-                    message: CRUDMessages.GetNotfound,
+                    message: CustomMessages.RegisterNotFound(`idUser: ${id}`),
                     data: null
                 }
             }
@@ -103,7 +103,7 @@ export class UsersService {
             if(!user) {
                 return {
                     statusCode: HttpStatus.NOT_FOUND,
-                    message: CRUDMessages.GetNotfound,
+                    message: CustomMessages.RegisterNotFound(`idUser: ${id}`),
                     data: null
                 }
             }
