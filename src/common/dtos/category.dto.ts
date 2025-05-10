@@ -1,5 +1,7 @@
 import { IsBoolean, IsOptional, IsString, MaxLength } from "class-validator";
 import { Message } from "../decorators/message.decorator";
+import { PartialType } from '@nestjs/mapped-types';
+
 
 export class CreateCategoryDto {
 
@@ -9,27 +11,12 @@ export class CreateCategoryDto {
 
     @IsOptional()
     @IsString({ message: Message.STRING("$property") })
-    description?: string | null;
-
-    @IsOptional()
-    @IsBoolean({ message: Message.BOOLEAN("$property") })
-    status?: boolean | null;
-
-}
-
-export class UpdateCategoryDto {
-
-    @IsString({ message: Message.STRING("$property") })
-    @MaxLength(30, { message: Message.MAX_LENGTH("$property", 30) })
-    @IsOptional()
-    name?: string;
-
-    @IsOptional()
-    @IsString({ message: Message.STRING("$property") })
-    description?: string | null;
+    description?: string;
 
     @IsOptional()
     @IsBoolean({ message: Message.BOOLEAN("$property") })
     status?: boolean;
 
 }
+
+export class UpdateCategoryDto extends PartialType(CreateCategoryDto) {}

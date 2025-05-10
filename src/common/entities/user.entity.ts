@@ -40,7 +40,7 @@ export class Users {
     surname: string;
 
     @Column({
-        type: 'char varying',
+        type: 'character varying',
         name: 'status',
     })
     role: Role;
@@ -53,7 +53,8 @@ export class Users {
     })
     phone: string;
 
-    @CreateDateColumn({ 
+    @CreateDateColumn({
+        type: 'timestamp with time zone',
         name: 'created_at' 
     })
     createdAt: Date;

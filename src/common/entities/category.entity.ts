@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryColumn } from "typeorm";
+import { Column, Entity, OneToMany, PrimaryColumn } from "typeorm";
+import { Products } from "./product.entity";
 
 @Entity('categories', { schema: 'public' })
 export class Category {
@@ -29,5 +30,8 @@ export class Category {
         default: true
     })
     status: boolean;
+
+    @OneToMany(() => Products, (product) => product.category)
+    products: Products[];
 
 }

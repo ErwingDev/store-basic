@@ -1,4 +1,6 @@
-import { Column, CreateDateColumn, Entity, PrimaryColumn } from "typeorm";
+import { Exclude } from "class-transformer";
+import { Column, CreateDateColumn, Entity, JoinColumn, OneToMany, PrimaryColumn } from "typeorm";
+import { Order } from "./oder.entity";
 
 @Entity('clients', { schema: 'public' })
 export class Clients {
@@ -31,6 +33,7 @@ export class Clients {
     })
     email: string;
     
+    @Exclude()
     @Column({
         type: 'character varying',
         name: 'password',
@@ -47,20 +50,19 @@ export class Clients {
     @Column({
         type: 'character varying',
         name: 'phone',
-        nullable: false,
         length: 10
     })
     phone: string;
     
     @Column({
-        type: 'char varying',
+        type: 'character varying',
         name: 'image',
-        nullable: false,
         default: 'default.png'
     })
     image: string;
 
-    @CreateDateColumn({ 
+    @CreateDateColumn({
+        type: 'timestamp with time zone',
         name: 'created_at' 
     })
     createdAt: Date;
@@ -68,9 +70,11 @@ export class Clients {
     @Column({
         type: 'boolean',
         name: 'status',
-        nullable: false,
         default: true
     })
     status: boolean;
+
+    @OneToMany(() => Order, (order) => order.client)
+    order: Order[];
 
 }

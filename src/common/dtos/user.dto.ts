@@ -1,6 +1,7 @@
 import { IsBoolean, IsDate, IsEmail, IsEnum, IsOptional, IsString, MaxLength, MinLength } from "class-validator"
 import { Role } from "../enums/role.enum";
 import { Message } from "../decorators/message.decorator";
+import { PartialType } from "@nestjs/mapped-types";
 
 export class CreateUserDto {
 
@@ -23,7 +24,7 @@ export class CreateUserDto {
     @IsString({ message: Message.STRING("$property") })
     @MaxLength(50, { message: Message.MAX_LENGTH("$property", 50) })
     @IsOptional()
-    address?: string | null;
+    address?: string;
 
     @IsEnum(Role)
     @IsString({ message: Message.STRING("$property") })
@@ -32,7 +33,7 @@ export class CreateUserDto {
     @IsString({ message: Message.STRING("$property") })
     @MaxLength(10, { message: Message.MAX_LENGTH("$property", 10) })
     @IsOptional()
-    phone?: string | null;
+    phone?: string;
     
     // @ApiProperty({ type: 'string', format: 'binary' }) // Para Swagger
     @IsOptional()
@@ -45,36 +46,4 @@ export class CreateUserDto {
 
 }
 
-export class UpdateUserDto {
-
-    @IsString({ message: Message.STRING("$property") })
-    @MaxLength(15, { message: Message.MAX_LENGTH("$property", 15) })
-    @IsOptional()
-    name?: string;
-
-    @IsString({ message: Message.STRING("$property") })
-    @MaxLength(25, { message: Message.MAX_LENGTH("$property", 25) })
-    @IsOptional()
-    surname?: string;
-
-    @IsString({ message: Message.STRING("$property") })
-    @MaxLength(50, { message: Message.MAX_LENGTH("$property", 50) })
-    @IsOptional()
-    address?: string | null;
-    
-    @IsString({ message: Message.STRING("$property") })
-    @MaxLength(10, { message: Message.MAX_LENGTH("$property", 10) })
-    @IsOptional()
-    phone?: string | null;
-
-    @IsEnum(Role)
-    @IsString({ message: Message.STRING("$property") })
-    @IsOptional()
-    role?: Role;
-    
-    // @ApiProperty({ type: 'string', format: 'binary' }) // Para Swagger
-    @IsOptional()
-    @IsString({ message: Message.STRING("$property") })
-    image?: any;
-
-}
+export class UpdateUserDto extends PartialType(CreateUserDto) {}

@@ -1,5 +1,7 @@
-import { Column, CreateDateColumn, Entity, PrimaryColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryColumn } from "typeorm";
 import { OrderStatus } from "../enums/order.enum";
+import { OrderItems } from "./order-items.entity";
+import { Clients } from "./client.entity";
 
 @Entity('orders', { schema: 'public' })
 export class Order {
@@ -11,7 +13,7 @@ export class Order {
     idorder: number;
 
     @Column({
-        type: 'char varying',
+        type: 'character varying',
         name: 'status',
         default: OrderStatus.PENDING,
     })
@@ -26,19 +28,24 @@ export class Order {
     total: number;
   
     @Column({ 
-        type: 'char varying', 
+        type: 'character varying', 
         name: 'shipping_address',
         nullable: false,
         length: 50
     })
     shippingAddress: string;
   
-    @CreateDateColumn({ 
+    @CreateDateColumn({
+        type: 'timestamp with time zone',
         name: 'created_at' 
     })
     createdAt: Date;
 
-    // TODO: implementar la parte de tablas relacionales
-    idclient: number;
+    @ManyToOne(() => Clients, (client) => client.order)
+    @JoinColumn({ name: 'idclient' })
+    client: Clients;
+
+    @OneToMany(() => OrderItems, (orderItem) => orderItem.order, { cascade: true })
+    items: OrderItems[]
 
 }

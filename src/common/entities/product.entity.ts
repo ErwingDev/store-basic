@@ -1,16 +1,18 @@
-import { Column, CreateDateColumn, Entity, PrimaryColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryColumn } from "typeorm";
+import { Category } from "./category.entity";
+import { OrderItems } from "./order-items.entity";
 
 @Entity('products', { schema: 'public' })
-export class products {
+export class Products {
 
     @PrimaryColumn({
         type: 'integer',
         name: 'idproduct'
     })
-    idorder: number;
+    idproduct: number;
 
     @Column({
-        type: 'char varying',
+        type: 'character varying',
         name: 'name',
         nullable: false,
         length: 20
@@ -39,14 +41,15 @@ export class products {
     stock: number;
 
     @Column({
-        type: 'char varying',
+        type: 'character varying',
         name: 'image',
         nullable: false,
         default: 'default.png'
     })
     image: string;
 
-    @CreateDateColumn({ 
+    @CreateDateColumn({
+        type: 'timestamp with time zone',
         name: 'created_at' 
     })
     createdAt: Date;
@@ -59,14 +62,12 @@ export class products {
     })
     status: boolean;
 
-    @Column({
-        type: 'boolean',
-        name: 'removed',
-        nullable: false,
-        default: false
-    })
-    removed: boolean;
+    // muchos productos pertenecen a una categoria
+    @ManyToOne(() => Category, (category) => category.products)
+    @JoinColumn({ name: 'idcategory' })
+    category: Category;
 
-    idcategory: number;
+    @OneToMany(() => OrderItems, (orderItems) => orderItems.product)
+    orderItems: OrderItems[];
 
 }

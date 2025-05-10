@@ -4,9 +4,6 @@ import { Message } from '../decorators/message.decorator';
 export class OrderItemsDto {
     
     @IsInt({ message: Message.INT("$property") })
-    idOrder: number;
-    
-    @IsInt({ message: Message.INT("$property") })
     idProduct: number;
     
     @IsInt({ message: Message.INT("$property") })

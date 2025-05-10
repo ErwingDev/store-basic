@@ -1,4 +1,6 @@
-import { Column, Entity, PrimaryColumn } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from "typeorm";
+import { Order } from "./oder.entity";
+import { Products } from "./product.entity";
 
 @Entity('order_items', { schema: 'public' })
 export class OrderItems {
@@ -24,8 +26,12 @@ export class OrderItems {
     })
     unitPrice: string;
   
-    // TODO: implementar la parte de tablas relacionales
-    idorder: number;
-    idproduct: number;
+    @ManyToOne(() => Order, (order) => order.items)
+    @JoinColumn({ name: 'idorder' })
+    order: Order;
+
+    @ManyToOne(() => Products, (product) => product.orderItems)
+    @JoinColumn({ name: 'idproduct' })
+    product: Products;
 
 }
