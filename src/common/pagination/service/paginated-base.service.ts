@@ -23,12 +23,17 @@ export abstract class PaginateService<T extends ObjectLiteral> {
             relations = [], 
             where: additionalWhere = {} 
         } = options;
+        const queryBuilder = this.repository.createQueryBuilder('mainEntity');
 
-        // Configuración WHERE
+        // Configuración Where
         const where: any[] = [additionalWhere];
         if (search && searchableColumns.length > 0) {
+            const textColumns = searchableColumns.filter(column => {
+                const metadata = this.repository.metadata.findColumnWithPropertyName(column);
+                return metadata?.type === 'varchar' || metadata?.type === 'text' || metadata?.type === 'character varying';
+            });
             where.push(
-                ...searchableColumns.map((column) => ({
+                ...textColumns.map((column) => ({
                     // [column]: Like(`%${search}%`),   // respeta el texto
                     [column]: ILike(`%${search}%`),     // no distingue mayusculas y minusculas 
                 }))

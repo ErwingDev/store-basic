@@ -101,10 +101,9 @@ export class OrdersService extends PaginateService<Order> {
 
     async findAll(paginateQueryDto: PaginateQueryDto) {
         try {
-            // TODO: corregir bug
             // const orders = await this.orderRepository.find({ relations: { items: { product: true }, client: true } });
             const orders = await this.paginate(paginateQueryDto, {
-                searchableColumns: ['status', 'createdAt', 'items'],
+                searchableColumns: ['status', 'items.product.name'], //createdAt
                 defaultSort: { createdAt: 'DESC' } as FindOptionsOrder<Order>,
                 relations: ['items', 'client', 'items.product']
             })
