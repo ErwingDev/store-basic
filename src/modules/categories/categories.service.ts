@@ -3,15 +3,19 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { CreateCategoryDto, UpdateCategoryDto } from 'src/common/dtos/category.dto';
 import { Category } from 'src/common/entities/category.entity';
 import { CRUDMessages, CustomMessages } from 'src/common/enums/message.enum';
-import { Repository } from 'typeorm';
+import { PaginateQueryDto } from 'src/common/pagination/dto/pagination.dto';
+import { PaginateService } from 'src/common/pagination/service/paginated-base.service';
+import { FindOptionsOrder, Repository } from 'typeorm';
 
 @Injectable()
-export class CategoriesService {
+export class CategoriesService extends PaginateService<Category> {
 
     constructor(
         @InjectRepository(Category)
         private readonly categoryRepository: Repository<Category>
-    ) {}
+    ) {
+        super(categoryRepository);
+    }
 
     async create(createCategoryDto: CreateCategoryDto) {
         try {
@@ -23,19 +27,30 @@ export class CategoriesService {
             }
         } catch (error) {
             return {
-                statusCode: HttpStatus.BAD_REQUEST,
+                statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
                 message: error.message
             }
         }
     }
 
-    async findAll() {
-        const categories = await this.categoryRepository.find();
-        return {
-            statusCode: HttpStatus.OK,
-            message: CRUDMessages.GetSuccess,
-            data: categories,
-            count: categories.length
+    async findAll(paginateQueryDto: PaginateQueryDto) {
+        try {    
+            // const categories = await this.categoryRepository.find();
+            const categories = await this.paginate(paginateQueryDto, {
+                searchableColumns: ['name', 'description'],
+                defaultSort: { name: 'ASC' } as FindOptionsOrder<Category>,
+                // relations: ['products']
+            });
+            return {
+                statusCode: HttpStatus.OK,
+                message: CRUDMessages.GetSuccess,
+                data: categories
+            }
+        } catch (error) {
+            return {
+                statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+                message: error.message
+            }
         }
     }
 
@@ -56,7 +71,7 @@ export class CategoriesService {
             }
         } catch (error) {
             return {
-                statusCode: HttpStatus.BAD_REQUEST,
+                statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
                 message: error.message
             }
         }
@@ -81,7 +96,7 @@ export class CategoriesService {
             }
         } catch (error) {
             return {
-                statusCode: HttpStatus.BAD_REQUEST,
+                statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
                 message: error.message
             }
         }
@@ -113,7 +128,7 @@ export class CategoriesService {
             }
         } catch (error) {
             return {
-                statusCode: HttpStatus.BAD_REQUEST,
+                statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
                 message: error.message
             }
         }

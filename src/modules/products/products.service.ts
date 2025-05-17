@@ -3,19 +3,23 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { CreateProductDto, UpdateProductDto, UpdateStockProductDto } from 'src/common/dtos/product.dto';
 import { Products } from 'src/common/entities/product.entity';
 import { CRUDMessages, CustomMessages } from 'src/common/enums/message.enum';
-import { Repository } from 'typeorm';
+import { FindOptionsOrder, Repository } from 'typeorm';
 import { DateTime } from 'luxon';
 import { Category } from 'src/common/entities/category.entity';
+import { PaginateQueryDto } from 'src/common/pagination/dto/pagination.dto';
+import { PaginateService } from 'src/common/pagination/service/paginated-base.service';
 
 @Injectable()
-export class ProductsService {
+export class ProductsService extends PaginateService<Products> {
 
     constructor(
         @InjectRepository(Products)
         private readonly productRepository: Repository<Products>,
         @InjectRepository(Category)
         private readonly categoryRepository: Repository<Category>,
-    ) {}
+    ) {
+        super(productRepository);
+    }
 
     async create(createProductDto: CreateProductDto) {
         try {
@@ -40,19 +44,30 @@ export class ProductsService {
             }
         } catch (error) {
             return {
-                statusCode: HttpStatus.BAD_REQUEST,
+                statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
                 message: error.message
             }
         }
     }
 
-    async findAll() {
-        const products = await this.productRepository.find({ relations: { category: true } });
-        return {
-            statusCode: HttpStatus.OK,
-            message: CRUDMessages.GetSuccess,
-            data: products,
-            count: products.length
+    async findAll(paginateQueryDto: PaginateQueryDto) {
+        try {
+            // const products = await this.productRepository.find({ relations: { category: true } });
+            const products = await this.paginate(paginateQueryDto, {
+                searchableColumns: ['name', 'description'],
+                defaultSort: { name: 'ASC' } as FindOptionsOrder<Products>,
+                relations: ['category']
+            });
+            return {
+                statusCode: HttpStatus.OK,
+                message: CRUDMessages.GetSuccess,
+                data: products
+            }
+        } catch (error) {
+            return {
+                statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+                message: error.message
+            }
         }
     }
 
@@ -76,13 +91,13 @@ export class ProductsService {
             }
         } catch (error) {
             return {
-                statusCode: HttpStatus.BAD_REQUEST,
+                statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
                 message: error.message
             }
         }
     }
 
-    async update(id:number, updateClientDto: UpdateProductDto) {
+    async update(id:number, updateProductDto: UpdateProductDto) {
         try {
             const product = await this.productRepository.findOneBy({ idproduct: id });
             if(!product) {
@@ -92,16 +107,16 @@ export class ProductsService {
                     data: null
                 }
             }
-            await this.productRepository.update(id, updateClientDto);
-            const updateClient = await this.productRepository.findOneBy({ idproduct: id });
+            await this.productRepository.update(id, updateProductDto);
+            const updateProduct = await this.productRepository.findOneBy({ idproduct: id });
             return {
                 statusCode: HttpStatus.OK,
                 message: CRUDMessages.UpdateSuccess,
-                data: updateClient
+                data: updateProduct
             }
         } catch (error) {
             return {
-                statusCode: HttpStatus.BAD_REQUEST,
+                statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
                 message: error.message
             }
         }
@@ -118,15 +133,15 @@ export class ProductsService {
                 }
             }
             await this.productRepository.increment({ idproduct: id }, 'stock', +stock)
-            const updateClient = await this.productRepository.findOneBy({ idproduct: id });
+            const updateProduct = await this.productRepository.findOneBy({ idproduct: id });
             return {
                 statusCode: HttpStatus.OK,
                 message: CRUDMessages.UpdateSuccess,
-                data: updateClient
+                data: updateProduct
             }
         } catch (error) {
             return {
-                statusCode: HttpStatus.BAD_REQUEST,
+                statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
                 message: error.message
             }
         }
@@ -143,15 +158,15 @@ export class ProductsService {
                 }
             }
             await this.productRepository.decrement({ idproduct: id }, 'stock', +stock)
-            const updateClient = await this.productRepository.findOneBy({ idproduct: id });
+            const updateProduct = await this.productRepository.findOneBy({ idproduct: id });
             return {
                 statusCode: HttpStatus.OK,
                 message: CRUDMessages.UpdateSuccess,
-                data: updateClient
+                data: updateProduct
             }
         } catch (error) {
             return {
-                statusCode: HttpStatus.BAD_REQUEST,
+                statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
                 message: error.message
             }
         }
@@ -183,7 +198,7 @@ export class ProductsService {
             }
         } catch (error) {
             return {
-                statusCode: HttpStatus.BAD_REQUEST,
+                statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
                 message: error.message
             }
         }

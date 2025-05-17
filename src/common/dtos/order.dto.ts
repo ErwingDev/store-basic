@@ -1,5 +1,5 @@
 import { Type } from "class-transformer";
-import { IsArray, IsEnum, IsInt, IsString, ValidateNested } from "class-validator"
+import { IsArray, IsEnum, IsInt, IsNotEmpty, IsString, ValidateNested } from "class-validator"
 import { OrderItemsDto } from "./order-items.dto";
 import { OrderStatus } from "../enums/order.enum";
 import { Message } from "../decorators/message.decorator";
@@ -21,7 +21,9 @@ export class OrderDto {
 
 export class UpdateOrderStatus {
     
-    @IsEnum(OrderStatus)
+    @IsEnum(OrderStatus, {
+        message: `status debe ser uno de: ${Object.values(OrderStatus).join(', ')}`,
+    })
     status: OrderStatus;
 
 }

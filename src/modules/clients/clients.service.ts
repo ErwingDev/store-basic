@@ -3,17 +3,21 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { CreateClientDto, UpdateClientDto } from 'src/common/dtos/client.dto';
 import { Clients } from 'src/common/entities/client.entity';
 import { CRUDMessages, CustomMessages } from 'src/common/enums/message.enum';
-import { Repository } from 'typeorm';
+import { FindOptionsOrder, Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { DateTime } from 'luxon';
+import { PaginateQueryDto } from 'src/common/pagination/dto/pagination.dto';
+import { PaginateService } from 'src/common/pagination/service/paginated-base.service';
 
 @Injectable()
-export class ClientsService {
+export class ClientsService extends PaginateService<Clients> {
 
     constructor(
         @InjectRepository(Clients)
         private readonly clientRepository: Repository<Clients>
-    ) {}
+    ) {
+        super(clientRepository);
+    }
 
     async create(createClientDto: CreateClientDto) {
         try {
@@ -34,19 +38,28 @@ export class ClientsService {
             // const { password, ...rspta } = clientCreated;
         } catch (error) {
             return {
-                statusCode: HttpStatus.BAD_REQUEST,
+                statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
                 message: error.message
             }
         }
     }
 
-    async findAll() {
-        const clients = await this.clientRepository.find();
-        return {
-            statusCode: HttpStatus.OK,
-            message: CRUDMessages.GetSuccess,
-            data: clients,
-            count: clients.length
+    async findAll(paginateQueryDto: PaginateQueryDto) {
+        try {
+            const clients = await this.paginate(paginateQueryDto, {
+                searchableColumns: ['name', 'surname', 'email'],
+                defaultSort: { idclient: 'DESC' } as FindOptionsOrder<Clients>,
+            });
+            return {
+                statusCode: HttpStatus.OK,
+                message: CRUDMessages.GetSuccess,
+                data: clients
+            }
+        } catch (error) {
+            return {
+                statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+                message: error.message
+            }
         }
     }
 
@@ -67,7 +80,7 @@ export class ClientsService {
             }
         } catch (error) {
             return {
-                statusCode: HttpStatus.BAD_REQUEST,
+                statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
                 message: error.message
             }
         }
@@ -92,7 +105,7 @@ export class ClientsService {
             }
         } catch (error) {
             return {
-                statusCode: HttpStatus.BAD_REQUEST,
+                statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
                 message: error.message
             }
         }
@@ -124,7 +137,7 @@ export class ClientsService {
             }
         } catch (error) {
             return {
-                statusCode: HttpStatus.BAD_REQUEST,
+                statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
                 message: error.message
             }
         }

@@ -1,19 +1,21 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
-import { OrderDto } from 'src/common/dtos/order.dto';
+import { OrderDto, UpdateOrderStatus } from 'src/common/dtos/order.dto';
 import { Order } from 'src/common/entities/oder.entity';
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, FindOptionsOrder, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { OrderItems } from 'src/common/entities/order-items.entity';
 import { ClientsService } from '../clients/clients.service';
-import { CRUDMessages } from 'src/common/enums/message.enum';
+import { CRUDMessages, CustomMessages } from 'src/common/enums/message.enum';
 import { ProductsService } from '../products/products.service';
 import { DateTime } from 'luxon';
 import { OrderStatus } from 'src/common/enums/order.enum';
 import { Clients } from 'src/common/entities/client.entity';
 import { Products } from 'src/common/entities/product.entity';
+import { PaginateQueryDto } from 'src/common/pagination/dto/pagination.dto';
+import { PaginateService } from 'src/common/pagination/service/paginated-base.service';
 
 @Injectable()
-export class OrdersService {
+export class OrdersService extends PaginateService<Order> {
 
     constructor(
         private readonly clientService: ClientsService,
@@ -23,7 +25,9 @@ export class OrdersService {
         private readonly orderRepository: Repository<Order>,
         @InjectRepository(OrderItems)
         private readonly orderItemsRepository: Repository<OrderItems>,
-    ) {}
+    ) {
+        super(orderRepository);
+    }
 
     async create(orderDto: OrderDto) {
         const queryRunner = this.dataSource.createQueryRunner();
@@ -86,12 +90,88 @@ export class OrdersService {
             // Rollback en caso de error
             await queryRunner.rollbackTransaction();
             return {
-                statusCode: HttpStatus.BAD_REQUEST,
+                statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
                 message: error.message
             }
         } finally {
             // Liberar el QueryRunner
             await queryRunner.release();
+        }
+    }
+
+    async findAll(paginateQueryDto: PaginateQueryDto) {
+        try {
+            // TODO: corregir bug
+            // const orders = await this.orderRepository.find({ relations: { items: { product: true }, client: true } });
+            const orders = await this.paginate(paginateQueryDto, {
+                searchableColumns: ['status', 'createdAt', 'items'],
+                defaultSort: { createdAt: 'DESC' } as FindOptionsOrder<Order>,
+                relations: ['items', 'client', 'items.product']
+            })
+            return {
+                statusCode: HttpStatus.OK,
+                message: CRUDMessages.GetSuccess,
+                data: orders
+            }
+        } catch (error) {
+            return {
+                statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+                message: error.message
+            }
+        }
+    }
+
+    async findOne(id: number) {
+        try {
+            const order = await this.orderRepository.findOne({
+                where: { idorder: id },
+                relations: { items: { product: true }, client: true }
+            });
+            if(!order) {
+                return {
+                    statusCode: HttpStatus.NOT_FOUND,
+                    message: CustomMessages.RegisterNotFound(`idOder: ${id}`),
+                    data: null
+                }
+            }
+            return {
+                statusCode: HttpStatus.OK,
+                message: CRUDMessages.GetSuccess,
+                data: order
+            }
+        } catch (error) {
+            return {
+                statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+                message: error.message
+            }
+        }
+    }
+
+    async updateOrderStatus(id: number, updateOrderStatus: UpdateOrderStatus) {
+        try {
+            const order = await this.orderRepository.findOne({
+                where: { idorder: id },
+                relations: { items: { product: true }, client: true }
+            });
+            if(!order) {
+                return {
+                    statusCode: HttpStatus.NOT_FOUND,
+                    message: CustomMessages.RegisterNotFound(`idOder: ${id}`),
+                    data: null
+                }
+            }
+            await this.orderRepository.update(id, updateOrderStatus);
+            const updateOrder = await this.orderRepository.findOneBy({ idorder: id });
+            return {
+                statusCode: HttpStatus.OK,
+                message: CRUDMessages.GetSuccess,
+                data: updateOrder
+            }
+        } catch (error) {
+            return {
+                statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+                message: error.message
+            }
         }
     }
 
