@@ -34,7 +34,7 @@ export class CategoriesService extends PaginateService<Category> {
     }
 
     async findAll(paginateQueryDto: PaginateQueryDto) {
-        try {    
+        try {  
             // const categories = await this.categoryRepository.find();
             const categories = await this.paginate(paginateQueryDto, {
                 searchableColumns: ['name', 'description'],

@@ -8,6 +8,7 @@ import { DateTime } from 'luxon';
 import { Category } from 'src/common/entities/category.entity';
 import { PaginateQueryDto } from 'src/common/pagination/dto/pagination.dto';
 import { PaginateService } from 'src/common/pagination/service/paginated-base.service';
+import { UploadService } from 'src/common/upload/upload.service';
 
 @Injectable()
 export class ProductsService extends PaginateService<Products> {
@@ -23,6 +24,7 @@ export class ProductsService extends PaginateService<Products> {
 
     async create(createProductDto: CreateProductDto) {
         try {
+            console.log(createProductDto);
             const category = await this.categoryRepository.findOneBy({ idcategory: createProductDto.idCategory });
             if(!category) {
                 return {

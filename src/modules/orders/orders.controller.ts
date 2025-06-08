@@ -1,8 +1,9 @@
-import { Body, Controller, Get, Param, Patch, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, Query, UsePipes } from '@nestjs/common';
 import { OrdersService } from './orders.service';
 import { OrderDto } from 'src/common/dtos/order.dto';
 import { UpdateOrderStatus } from '../../common/dtos/order.dto';
 import { PaginateQueryDto } from 'src/common/pagination/dto/pagination.dto';
+import { QueryArrayPipe } from 'src/common/pagination/pipe/query-array.pip';
 
 @Controller('orders')
 export class OrdersController {
@@ -17,6 +18,7 @@ export class OrdersController {
     }
 
     @Get()
+    // @UsePipes(new QueryArrayPipe(paginateQueryDto))
     findAll(@Query() paginateQueryDto: PaginateQueryDto) {
         return this.ordersService.findAll(paginateQueryDto);
     }

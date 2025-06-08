@@ -105,7 +105,7 @@ export class OrdersService extends PaginateService<Order> {
             const orders = await this.paginate(paginateQueryDto, {
                 searchableColumns: ['status', 'items.product.name'], //createdAt
                 defaultSort: { createdAt: 'DESC' } as FindOptionsOrder<Order>,
-                relations: ['items', 'client', 'items.product']
+                relations: ['items', 'client', 'items.product'],
             })
             return {
                 statusCode: HttpStatus.OK,

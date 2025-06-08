@@ -1,10 +1,12 @@
 import { IsBoolean, IsInt, IsNumber, IsOptional, IsString, MaxLength, Min } from "class-validator"
 import { Message } from "../decorators/message.decorator";
 import { PartialType } from "@nestjs/mapped-types";
+import { Transform } from "class-transformer";
 
 export class CreateProductDto {
 
     @IsInt({ message: Message.INT("$property") })
+    @Transform(({ value }) => parseInt(value))
     idCategory: number; 
     
     @IsString({ message: Message.STRING("$property") })
@@ -16,14 +18,16 @@ export class CreateProductDto {
     description?: string;
     
     @IsNumber({}, { message: Message.NUMBER("$property") })
+    @Transform(({ value }) => parseFloat(value))
     price: number;
     
     @IsInt({ message: Message.INT("$property") })
     @Min(0, { message: Message.MIN("$property", 0) })
+    @Transform(({ value }) => parseInt(value))
     stock: number;
     
     @IsOptional()
-    @IsString({ message: Message.STRING("$property") })
+    // @IsString({ message: Message.STRING("$property") })
     image?: any;
     
     @IsBoolean({ message: Message.BOOLEAN("$property") })

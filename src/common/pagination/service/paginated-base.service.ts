@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Repository, FindManyOptions, Like, ObjectLiteral, FindOptionsOrder, ILike } from 'typeorm';
+import { Repository, FindManyOptions, Like, ObjectLiteral, FindOptionsOrder, ILike, Equal } from 'typeorm';
 import { PaginateQueryDto } from '../dto/pagination.dto';
 
 @Injectable()
@@ -16,21 +16,20 @@ export abstract class PaginateService<T extends ObjectLiteral> {
             where?: any;
         } = {},
     ) {
-        const { page = 1, limit = 10, search, sortBy } = PaginateQueryDto;
+        const { page = 1, limit = 10, search, sortBy, equal } = PaginateQueryDto;
         const { 
             searchableColumns = [], 
             defaultSort = {} as FindOptionsOrder<T>, 
             relations = [], 
             where: additionalWhere = {} 
         } = options;
-        const queryBuilder = this.repository.createQueryBuilder('mainEntity');
 
         // Configuración Where
         const where: any[] = [additionalWhere];
         if (search && searchableColumns.length > 0) {
             const textColumns = searchableColumns.filter(column => {
                 const metadata = this.repository.metadata.findColumnWithPropertyName(column);
-                return metadata?.type === 'varchar' || metadata?.type === 'text' || metadata?.type === 'character varying';
+                return metadata?.type === 'varchar' || metadata?.type === 'text' || metadata?.type === 'character varying' || metadata?.type === 'integer';
             });
             where.push(
                 ...textColumns.map((column) => ({
@@ -38,6 +37,14 @@ export abstract class PaginateService<T extends ObjectLiteral> {
                     [column]: ILike(`%${search}%`),     // no distingue mayusculas y minusculas 
                 }))
             );
+        }
+
+        // Configuracion de Equal
+        if (equal) {
+            const [field, value] = equal.split('=');
+            if (field && value !== undefined) {
+                where.push({ [field]: Equal(value) });
+            }
         }
 
         // Configuración ORDER

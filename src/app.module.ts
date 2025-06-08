@@ -9,6 +9,7 @@ import { CategoriesModule } from './modules/categories/categories.module';
 import { OrdersModule } from './modules/orders/orders.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
+import { UploadModule } from './common/upload/upload.module';
 
 @Module({
   imports: [
@@ -28,7 +29,7 @@ import { ConfigModule } from '@nestjs/config';
     ClientsModule, 
     ProductsModule, 
     CategoriesModule, 
-    OrdersModule,
+    OrdersModule, UploadModule,
   ],
   controllers: [AppController],
   providers: [AppService],

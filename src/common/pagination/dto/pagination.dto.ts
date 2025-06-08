@@ -1,4 +1,4 @@
-import { IsOptional, IsNumber, Min, Max, IsString } from 'class-validator';
+import { IsOptional, IsNumber, Min, Max, IsString, IsArray } from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class PaginateQueryDto {
@@ -19,6 +19,14 @@ export class PaginateQueryDto {
     @IsOptional()
     @Type(() => String)
     search?: string;
+
+    @IsOptional()
+    @Type(() => String)
+    // @IsArray()
+    // @IsString({ each: true })
+    @IsString()
+    // equal?: string[];
+    equal?: string;
 
     @IsOptional()
     @IsString()
