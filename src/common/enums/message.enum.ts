@@ -17,3 +17,9 @@ export enum CRUDMessages {
 export const CustomMessages = {
     RegisterNotFound: (field: string) => `No existe un registro relacionado con el campo ${field}`,
 };
+
+export enum AlertMessages {
+    ImageNotFound = "Archivo de imagen no encontrada.",
+    InvalidCredentials = "Credenciales inválidas.",
+    InvalidEmail = "Email inválido.",
+}

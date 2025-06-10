@@ -5,6 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Products } from 'src/common/entities/product.entity';
 import { Category } from 'src/common/entities/category.entity';
 import { UploadModule } from 'src/common/upload/upload.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   controllers: [ProductsController],
@@ -14,7 +15,8 @@ import { UploadModule } from 'src/common/upload/upload.module';
       Products,
       Category
     ]),
-    UploadModule
+    UploadModule,
+    ConfigModule
   ],
   exports: [
     ProductsService

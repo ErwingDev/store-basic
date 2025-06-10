@@ -85,6 +85,29 @@ export class UsersService extends PaginateService<Users> {
         }
     }
 
+     async findByEmail(email: string) {
+        try {
+            const user = await this.userRepository.findOneBy({ email });
+            if(!user) {
+                return {
+                    statusCode: HttpStatus.NOT_FOUND,
+                    message: CustomMessages.RegisterNotFound(`email: ${email}`),
+                    data: null
+                }
+            }
+            return {
+                statusCode: HttpStatus.OK,
+                message: CRUDMessages.GetSuccess,
+                data: user
+            }
+        } catch (error) {
+            return {
+                statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+                message: error.message
+            }
+        }
+    }
+
     async update(id:number, updateUserDto: UpdateUserDto) {
         try {
             const user = await this.userRepository.findOneBy({ iduser: id });

@@ -8,13 +8,17 @@ import * as bcrypt from 'bcrypt';
 import { DateTime } from 'luxon';
 import { PaginateQueryDto } from 'src/common/pagination/dto/pagination.dto';
 import { PaginateService } from 'src/common/pagination/service/paginated-base.service';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class ClientsService extends PaginateService<Clients> {
 
+    folder = 'clients';
+
     constructor(
         @InjectRepository(Clients)
-        private readonly clientRepository: Repository<Clients>
+        private readonly clientRepository: Repository<Clients>,
+        private readonly configService: ConfigService
     ) {
         super(clientRepository);
     }
@@ -86,6 +90,29 @@ export class ClientsService extends PaginateService<Clients> {
         }
     }
 
+    async findByEmail(email: string) {
+        try {
+            const client = await this.clientRepository.findOneBy({ email });
+            if(!client) {
+                return {
+                    statusCode: HttpStatus.NOT_FOUND,
+                    message: CustomMessages.RegisterNotFound(`email: ${email}`),
+                    data: null
+                }
+            }
+            return {
+                statusCode: HttpStatus.OK,
+                message: CRUDMessages.GetSuccess,
+                data: client
+            }
+        } catch (error) {
+            return {
+                statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+                message: error.message
+            }
+        }
+    }
+
     async update(id:number, updateClientDto: UpdateClientDto) {
         try {
             const client = await this.clientRepository.findOneBy({ idclient: id });
@@ -141,6 +168,12 @@ export class ClientsService extends PaginateService<Clients> {
                 message: error.message
             }
         }
+    }
+
+    async uploadImage(id: number, fileName: string) {
+        await this.clientRepository.update(id, { image: fileName });
+        const secureUrl = `${this.configService.get('HOST_UPLOAD')}/${this.folder}/${fileName}`;
+        return secureUrl;
     }
 
 }

@@ -1,6 +1,7 @@
 import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryColumn } from "typeorm";
 import { Category } from "./category.entity";
 import { OrderItems } from "./order-items.entity";
+import { Expose } from "class-transformer";
 
 @Entity('products', { schema: 'public' })
 export class Products {
@@ -62,12 +63,18 @@ export class Products {
     })
     status: boolean;
 
-    // muchos productos pertenecen a una categoria
+    // 1 producto pertenece a 1 categoria / 1 categoria puede tener muchos productos
     @ManyToOne(() => Category, (category) => category.products)
     @JoinColumn({ name: 'idcategory' })
     category: Category;
 
+    // 1 producto puede estar en muchas ordenes
     @OneToMany(() => OrderItems, (orderItems) => orderItems.product)
     orderItems: OrderItems[];
+
+    @Expose()
+    get pathImage(): string {
+        return `${process.env.HOST_UPLOAD}/products/${this.image}`;
+    }
 
 }

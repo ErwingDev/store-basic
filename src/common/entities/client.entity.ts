@@ -1,4 +1,4 @@
-import { Exclude } from "class-transformer";
+import { Exclude, Expose } from "class-transformer";
 import { Column, CreateDateColumn, Entity, JoinColumn, OneToMany, PrimaryColumn } from "typeorm";
 import { Order } from "./oder.entity";
 
@@ -76,5 +76,10 @@ export class Clients {
 
     @OneToMany(() => Order, (order) => order.client)
     order: Order[];
+
+    @Expose()
+    get pathImage(): string {
+        return `${process.env.HOST_UPLOAD}/clients/${this.image}`;
+    }
 
 }

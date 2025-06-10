@@ -9,15 +9,18 @@ import { Category } from 'src/common/entities/category.entity';
 import { PaginateQueryDto } from 'src/common/pagination/dto/pagination.dto';
 import { PaginateService } from 'src/common/pagination/service/paginated-base.service';
 import { UploadService } from 'src/common/upload/upload.service';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class ProductsService extends PaginateService<Products> {
+    private folder = 'products';
 
     constructor(
         @InjectRepository(Products)
         private readonly productRepository: Repository<Products>,
         @InjectRepository(Category)
         private readonly categoryRepository: Repository<Category>,
+        private readonly configService: ConfigService
     ) {
         super(productRepository);
     }
@@ -204,6 +207,12 @@ export class ProductsService extends PaginateService<Products> {
                 message: error.message
             }
         }
+    }
+
+    async uploadImage(id: number, fileName: string) {
+        await this.productRepository.update(id, { image: fileName });
+        const secureUrl = `${this.configService.get('HOST_UPLOAD')}/${this.folder}/${fileName}`;
+        return secureUrl;
     }
 
 }

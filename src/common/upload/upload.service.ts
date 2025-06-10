@@ -23,14 +23,15 @@ export class UploadService {
             storage: diskStorage({
                 destination: this.getDestinationPath(folder),
                 filename: (req, file, cb) => {
-                const randomName = randomUUID();
-                const fileExtName = extname(file.originalname);
-                cb(null, `${randomName}${fileExtName}`);
+                    // console.log({file});
+                    const randomName = randomUUID();
+                    const fileExtName = extname(file.originalname);
+                    cb(null, `${randomName}${fileExtName}`);
                 },
             }),
             fileFilter: (req, file, cb) => {
                 if (!file.originalname.match(/\.(jpg|jpeg|png)$/)) {
-                return cb(new Error('Solo se permiten imágenes (jpg, jpeg, png)'), false);
+                    return cb(new Error('Solo se permiten imágenes (jpg, jpeg, png)'), false);
                 }
                 cb(null, true);
             },
@@ -41,7 +42,7 @@ export class UploadService {
     }
 
     getFileUrl(folder: string, filename: string): string {
-        return `/uploads/${folder}/${filename}`;
+        return `uploads/${folder}/${filename}`;
     }
 
 }
