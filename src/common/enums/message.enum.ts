@@ -22,4 +22,5 @@ export enum AlertMessages {
     ImageNotFound = "Archivo de imagen no encontrada.",
     InvalidCredentials = "Credenciales inválidas.",
     InvalidEmail = "Email inválido.",
+    LoginSuccess = "Logueado correctamente.",
 }

@@ -92,7 +92,7 @@ export class ClientsService extends PaginateService<Clients> {
 
     async findByEmail(email: string) {
         try {
-            const client = await this.clientRepository.findOneBy({ email });
+            const client = await this.clientRepository.findOneBy({ email, status: true });
             if(!client) {
                 return {
                     statusCode: HttpStatus.NOT_FOUND,

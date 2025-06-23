@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Req, UseGuards } from '@nestjs/common';
 import { CategoriesService } from './categories.service';
 import { CreateCategoryDto, UpdateCategoryDto } from 'src/common/dtos/category.dto';
 import { PaginateQueryDto } from 'src/common/pagination/dto/pagination.dto';
@@ -24,8 +24,10 @@ export class CategoriesController {
 
     @Get()
     @Public()
-    findAll(@Query() paginateQueryDto: PaginateQueryDto) {
-        return this.categoriesService.findAll(paginateQueryDto);
+    findAll(@Req() req, @Query() paginateQueryDto: PaginateQueryDto) {
+        const { user } = req;
+        const isClient = user.role === Role.CLIENT;
+        return this.categoriesService.findAll(isClient, paginateQueryDto);
     }
     
     @Get(':id')

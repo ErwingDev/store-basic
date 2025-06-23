@@ -33,9 +33,10 @@ export class CategoriesService extends PaginateService<Category> {
         }
     }
 
-    async findAll(paginateQueryDto: PaginateQueryDto) {
+    async findAll(isClient: boolean, paginateQueryDto: PaginateQueryDto) {
         try {  
-            // const categories = await this.categoryRepository.find();
+            if(isClient) paginateQueryDto.equal = "status=true";
+            
             const categories = await this.paginate(paginateQueryDto, {
                 searchableColumns: ['name', 'description'],
                 defaultSort: { name: 'ASC' } as FindOptionsOrder<Category>,

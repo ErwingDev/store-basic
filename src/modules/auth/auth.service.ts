@@ -49,7 +49,15 @@ export class AuthService {
             role: user?.role
         }
         return {
-            access_token: this.jwtService.sign(payload)
+            statusCode: HttpStatus.OK,
+            message: AlertMessages.LoginSuccess,
+            data: {
+                token: this.jwtService.sign(payload),
+                idclient: user?.iduser,
+                email: user?.email,
+                name: user?.name,
+                surname: user?.surname,
+            }
         };
     }
 
@@ -69,7 +77,16 @@ export class AuthService {
             role: 'client'
         }
         return {
-            access_token: this.jwtService.sign(payload)
+            statusCode: HttpStatus.OK,
+            message: AlertMessages.LoginSuccess,
+            data: {
+                token: this.jwtService.sign(payload),
+                idclient: client?.idclient,
+                email: client?.email,
+                name: client?.name,
+                surname: client?.surname,
+                image: client?.pathImage
+            }
         };
     }
 
