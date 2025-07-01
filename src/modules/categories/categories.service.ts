@@ -40,7 +40,7 @@ export class CategoriesService extends PaginateService<Category> {
             const categories = await this.paginate(paginateQueryDto, {
                 searchableColumns: ['name', 'description'],
                 defaultSort: { name: 'ASC' } as FindOptionsOrder<Category>,
-                // relations: ['products']
+                relations: ['products']
             });
             return {
                 statusCode: HttpStatus.OK,

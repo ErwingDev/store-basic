@@ -76,11 +76,16 @@ export class AuthService {
             sub: client?.idclient,
             role: 'client'
         }
+        const refreshToken = this.generateRefreshToken(payload);
+
+        // save refreshToken
+        await this.clientsService.updateRefreshToken(client?.idclient || 0, refreshToken);
         return {
             statusCode: HttpStatus.OK,
             message: AlertMessages.LoginSuccess,
             data: {
                 token: this.jwtService.sign(payload),
+                refreshToken: refreshToken,
                 idclient: client?.idclient,
                 email: client?.email,
                 name: client?.name,
@@ -88,6 +93,54 @@ export class AuthService {
                 image: client?.pathImage
             }
         };
+    }
+
+    async refreshAccessToken(refreshToken: string) {
+        try {
+            // const decoded = this.jwtService.verify(refreshToken); 
+            const clientData = await this.clientsService.findByRefreshToken(refreshToken)
+            const client = clientData.data;
+            if (!client) {
+                return {
+                    statusCode: HttpStatus.UNAUTHORIZED,
+                    message: 'Refresh token inválido o expirado'
+                }
+            }
+
+            const payload = this.jwtService.verify(refreshToken, {
+                secret: process.env.JWT_REFRESH_SECRET,
+            });
+
+            const newAccessToken = this.jwtService.sign(
+                { sub: payload.sub, email: payload.email },
+                { expiresIn: '1d', secret: process.env.JWT_SECRET },
+            );
+            const newRefreshToken = this.jwtService.sign(
+                { sub: payload.sub, email: payload.email },
+                { expiresIn: '7d', secret: process.env.JWT_REFRESH_SECRET }
+            );
+            await this.clientsService.updateRefreshToken(client.idclient, newRefreshToken);
+            return {
+                statusCode: HttpStatus.OK,
+                message: AlertMessages.LoginSuccess,
+                data: {
+                    accessToken: newAccessToken,
+                    refreshToken: newRefreshToken
+                }
+            };
+        } catch (error) {
+            return {
+                statusCode: HttpStatus.UNAUTHORIZED,
+                message: 'RefreshInvalid or expired refresh token'
+            }
+        }
+    }
+
+    private generateRefreshToken(payload: any): string {
+        return this.jwtService.sign(payload, {
+            expiresIn: '7d',
+            secret: process.env.JWT_REFRESH_SECRET, 
+        });
     }
 
 }

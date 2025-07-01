@@ -74,6 +74,14 @@ export class Clients {
     })
     status: boolean;
 
+    @Expose()
+    @Column({
+        type: 'character varying',
+        name: 'refresh_token',
+        length: 250
+    })
+    refresh_token: string;
+
     @OneToMany(() => Order, (order) => order.client)
     order: Order[];
 

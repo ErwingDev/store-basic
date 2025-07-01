@@ -113,6 +113,29 @@ export class ClientsService extends PaginateService<Clients> {
         }
     }
 
+    async findByRefreshToken(token: string) {
+        try {
+            const client = await this.clientRepository.findOneBy({ refresh_token: token });
+            if(!client) {
+                return {
+                    statusCode: HttpStatus.NOT_FOUND,
+                    message: CustomMessages.RegisterNotFound(`refresh_token: ${token}`),
+                    data: null
+                }
+            }
+            return {
+                statusCode: HttpStatus.OK,
+                message: CRUDMessages.GetSuccess,
+                data: client
+            }
+        } catch (error) {
+            return {
+                statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+                message: error.message
+            }
+        }
+    }
+
     async update(id:number, updateClientDto: UpdateClientDto) {
         try {
             const client = await this.clientRepository.findOneBy({ idclient: id });
@@ -161,6 +184,31 @@ export class ClientsService extends PaginateService<Clients> {
                     message: CRUDMessages.DeleteError,
                     data: null
                 }
+            }
+        } catch (error) {
+            return {
+                statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+                message: error.message
+            }
+        }
+    }
+
+    async updateRefreshToken(id: number, refreshToken: string) {
+        try {
+            if(!id) {
+                return {
+                    statusCode: HttpStatus.NOT_ACCEPTABLE,
+                    message: 'Invalid'
+                }
+            }
+            const updateRefreshToken = await this.clientRepository.update(id, { 
+                refresh_token: refreshToken
+            });
+
+            return {
+                statusCode: HttpStatus.OK,
+                message: CRUDMessages.DeleteError,
+                data: updateRefreshToken
             }
         } catch (error) {
             return {
